@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Register</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>
+	<body>
+		<div class="register">
+			<h1>Registro</h1>
+
+			<div class="links">
+				<a href="{{ url_for('login') }}">Ingreso</a>
+				<a href="{{ url_for('register') }}" class="active">Registro</a>
+			</div>
+
+			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
+				<label for="nombres">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="nombres" placeholder="Nombre" id="nombres" required pattern="[A-Za-z]+{2,254}" title="Solo utilizar letras. No se permiten números">
+				
+				<label for="apellidos">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="apellidos" placeholder="Apellidos" id="apellidos" required pattern="[A-Za-z]+{2,254}" title="Solo utilizar letras. No se permiten números">
+
+				<label for="cedula">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="int" name="cedula" placeholder="Cedula" id="cedula" required pattern="[0-9]+"title="Solo utilizar números. No se permiten letras">
+
+				<label for="usuario">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="usuario" placeholder="Usuario" id="usuario" required>
+				
+				<label for="email">
+					<i class="fas fa-envelope"></i>
+				</label>
+				<input type="email" name="email" placeholder="Email" id="email" required pattern="[^@]+@[^@]+\.[^@]+">
+
+				<label for="telefono">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="int" name="telefono" placeholder="Telefono" id="telefono" required pattern="[0-9]+" title="Solo utilizar números. No se permiten letras">
+
+				<label for="rol">
+					<i class="fas fa-user"></i>
+				</label>
+				<select name="rol" class="form-select" aria-label="Default select example"" >
+					<option selected>Abrir el Menú</option>
+					<option value="administrador">Administrador</option>
+					<option value="trabajador">Trabajador</option>
+				</select>
+				
+				<label for="password">
+					<i class="fas fa-lock"></i>
+				</label>
+				<input type="password" name="password" placeholder="Password" id="password" required>
+				<div class="msg">{{ msg }}</div>
+				<div class="form-group">
+					<button type="submit">Registrarse</button>
+                </div>
+				<br>
+				<br>
+				<a href="{{url_for('home')}}" class="btn" role="button">Regresar</a>
+			</form>
+			<br>
+
+		</div>
+	</body>
+</html>
