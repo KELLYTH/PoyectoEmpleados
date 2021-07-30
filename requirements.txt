@@ -5,9 +5,14 @@ Flask==1.0
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.11.3
-MarkupSafe==1.0
 oauthlib==2.0.7
 requests==2.20.0
 requests-oauthlib==0.8.0
-urllib3==1.26.5
 Werkzeug==0.15.3
+Flask-MySQL==1.5.2
+Flask-MySQLdb==0.2.0
+opencv-contrib-python==4.5.3.56
+opencv-python==4.5.3.56
+opencv-python-headless==4.5.3.56
+matplotlib==3.4.2
+mtcnn==0.1.1
