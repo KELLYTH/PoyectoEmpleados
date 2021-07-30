@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block title %}Editar{% endblock %}
+
+{% block content %}
+<div class="update">
+
+    <h1>Actualización de datos</h1>
+    <form action="{{ url_for('editar') }}" method="post" autocomplete="off">
+        <label for="nombres">
+            <i class="fas fa-user"></i>
+        </label>
+        <input type="text" name="nombres" placeholder="Nombre" id="nombres" required pattern="[A-Za-z]+{2,254}" title="Solo utilizar letras. No se permiten números">
+
+        <label for="apellidos">
+            <i class="fas fa-user"></i>
+        </label>
+      
+        <input type="text" name="apellidos" placeholder="Apellidos" id="apellidos" required pattern="[A-Za-z]+{2,254}" title="Solo utilizar letras. No se permiten números">
+
+        <label for="cedula">
+            <i class="fas fa-user"></i>
+        </label>
+        <input type="int" name="cedula" placeholder="Cedula" id="cedula" required pattern="[0-9]+"title="Solo utilizar números. No se permiten letras">
+        
+        <label for="email">
+            <i class="fas fa-envelope"></i>
+        </label>
+        <input type="email" name="email" placeholder="Email" id="email" required pattern="[^@]+@[^@]+\.[^@]+">
+
+        <label for="telefono">
+            <i class="fas fa-user"></i>
+        </label>
+        <input type="int" name="telefono" placeholder="Telefono" id="telefono" required pattern="[0-9]+" title="Solo utilizar números. No se permiten letras">
+
+        
+        <label for="password">
+            <i class="fas fa-lock"></i>
+        </label>
+        <input type="password" name="password" placeholder="Password" id="password" required>
+        <div class="msg">{{ msg }}</div>
+        <div class="form-group">
+        <input type="submit" class="btn" value="Update">
+        </div>
+        
+    </form>
+    <a href="{{url_for('home')}}" class="btn" role="button">Cancelar</a>
+            </div>
+        </div>
+    </div>
+		</div>
+{% endblock %}
