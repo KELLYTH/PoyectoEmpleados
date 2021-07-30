@@ -1,8 +1,98 @@
 {% extends 'layout.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Horas trabajadas{% endblock %}
 
 {% block content %}
-<h2>Home Page</h2>
-<p>Welcome back, {{ username }}!</p>
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>
+<title>Document</title>
+</head>
+<body>
+<br/>
+
+<div class="container">
+    <h2>Control Horario</h2>
+    <p>Empleado: {{ nombre [1] }} {{ nombre [2] }}!</p>
+    <br>
+    <div class="row">
+        <div class="col-md-2">
+            <input type="text" name="From" id="From" class="form-control" placeholder="From Date"/>
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="to" id="to" class="form-control" placeholder="To Date"/>
+        </div>
+        <div class="col-md-8">
+            <input type="button" name="range" id="range" value="Range" class="btn btn-success"/>
+        </div>
+        <div class="clearfix"></div>
+        <br/>
+     </div>
+   <div id="purchase_order">
+    <table class="table table-bordered ">
+        <thead class="thead-primary">
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Hora Ingreso</th>
+                <th>Hora Salida</th>
+                <th>Horas Extras</th>
+                <th>TotalHoras</th>       
+            </tr>
+            {% for row in empleados %}
+            <tr>
+                <td>{{row[0] }}</td>
+                <td>{{row[1] }}</td>
+                <td>{{row[2] }}</td>
+                <td>{{row[3] }}</td>
+                <td>{{row[4] }}</td>
+                <td>{{row[5] }} H</td>
+               
+            </tr>
+            {% endfor %}
+        </table> 
+        
+    </div> 
+    <button type="button" class="btn btn-success">Exportar</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function(){
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd'
+        });
+        $(function(){
+            $("#From").datepicker();
+            $("#to").datepicker();
+        });
+        $('#range').click(function(){
+            var From = $('#From').val();
+            var to = $('#to').val();
+            if(From != '' && to != '')
+            {
+                $.ajax({
+                    url:"/range",
+                    method:"POST",
+                    data:{From:From, to:to},
+                    success:function(data)
+                    {
+                        $('#purchase_order').html(data);
+                        $('#purchase_order').append(data.htmlresponse);
+                    }
+                });
+            }
+            else
+            {
+                alert("Please Select the Date");
+            }
+        });
+    });
+</script>
+</body>
+</html>
 {% endblock %}

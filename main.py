@@ -1,13 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for,session
+from flask import Flask, render_template, request, redirect, url_for,session,flash,jsonify
 from flask_mysqldb import MySQL
 import bcrypt
-import os
-import cv2
-import numpy as np
-from matplotlib import pyplot as plt
-from mtcnn.mtcnn import MTCNN
-#import pymysql.cursors
+import time
 import re
+from datetime import datetime ,timedelta
+import ibm_db
 
 
 app = Flask(__name__)
@@ -26,7 +23,7 @@ mysql = MySQL(app)
 #Se crea una semilla
 semilla = bcrypt.gensalt()
 
-@app.route('/pythonlogin/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     # Output message if something goes wrong...
     msg = ''
@@ -62,7 +59,7 @@ def login():
                 session['username'] = dato[4]
 
                 #Redirige al index
-                return render_template('home.html')
+                return redirect(url_for('home'))
             else:
                 #Mensaje
                 msg = ("El password es incorrecto", "alert-warning")
@@ -136,7 +133,7 @@ def register():
             cur.execute(sQuery,(nombres, apellidos, cedula, usuario, email, telefono, rol, password))
 
            #Ejecuta el Commit
-        mysql.connection.commit()
+            mysql.connection.commit()
         msg = 'Tu Registro ha sido Exitoso!'
     elif request.method == 'POST':
         # Form is empty... (no POST data)
@@ -149,8 +146,18 @@ def register():
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
+        ##Consulta base 
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM usuarios WHERE id = %s', (session['id'],))
+        nombre=cur.fetchone()
+        print('kelly',nombre)
+        ##Consulta base empleados 
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id,fecha,hora_ingreso,hora_salida,horas_extras,horas_totales FROM horario_empleados WHERE id = %s', (session['id'],))
+        empleados=cur.fetchall()
+        print('kelly2',empleados[1])
         # User is loggedin show them the home page
-        return render_template('home.html', username=session['username'])
+        return render_template('home.html', nombre=nombre,empleados =empleados)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -163,6 +170,7 @@ def profile():
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM usuarios WHERE id = %s', (session['id'],))
         account=cur.fetchone()
+        
         # Show the profile page with account info
         return render_template('profileEmpleado.html', account=account)
     return redirect(url_for('login'))
@@ -174,16 +182,92 @@ def registroHorario():
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM usuarios WHERE id = %s', (session['id'],))
         account=cur.fetchone()
+        
         # Show the profile page with account info
         return render_template('registroHorario.html', account=account)
     return redirect(url_for('login'))
-#Verificación Sesión administrador
-@app.route('/pythonlogin/registroEntrada', methods=["GET", "POST"])
-def administrador():
-    pass
-#Verificación Sesión administrador
-@app.route('/pythonlogin/registroSalida', methods=["GET", "POST"])
-def registrar():
-    pass
+@app.route('/pythonlogin/entrada')
+def entrada():
+    ##Valida session
+    if 'loggedin' in session:
+     
+     ## variable fecha
+     fecha = time.strftime("%Y-%m-%d")
+     ## variable de la hora
+     Hora = time.strftime("%X")
+     
+     #Se realiza el Querry de Inserción
+     sQuery = "insert into horario_empleados (id, fecha, hora_ingreso) values (%s, %s, %s)"
+
+     #Se crea el cursos para la ejecución
+     cur = mysql.connection.cursor()
+
+     #Ejecuta la sentencia
+     cur.execute(sQuery,(session['id'], fecha, Hora))
+     account =cur.fetchall()
+     #Ejecuta el Commit
+     mysql.connection.commit()
+     flash('Registro Hora Ingreso Correctamente')
+     return redirect(url_for('registroHorario'))
+
+@app.route('/pythonlogin/salida')
+def salida():
+    ##Valida session
+    if 'loggedin' in session:
+     ##Variable fecha actual 
+     fecha = time.strftime("%Y-%m-%d")
+     ## variable de la hora
+     hora = time.strftime("%X")
+     h = input(8)
+     m = input(30)
+     hoy = datetime.datetime.now()
+
+     cur = mysql.connection.cursor()
+     cur.execute('SELECT * FROM usuarios WHERE id = %s', (session['id'],))
+     account=cur.fetchone()
+     hora_entrada = datetime.datetime(hoy.year, hoy.month, hoy.day, hour=h, minute=m)
+     horas_salida = datetime.timedelta(hours=17,minutes=30)
+     salida = hora_entrada + horas_salida
+
+     print(salida)
+    
+    
+    
+
+
+    flash('Registro Hora Salida Correctamente')
+    return redirect(url_for('registroHorario'))
+
+@app.route("/range",methods=["POST","GET"])
+def range():
+
+    cur = mysql.connection.cursor()
+    if request.method == 'POST':
+        From = request.form['From']
+        to = request.form['to']
+        print(From)
+        print(to)
+        query = "SELECT * from horario_empleados WHERE fecha BETWEEN '{}' AND '{}'".format(From,to)
+        cur.execute(query)
+        ordersrange = cur.fetchall()
+        return jsonify({'htmlresponse': render_template('response.html', ordersrange=ordersrange)})
+
+def sumar_hora(hora1,hora2):
+    formato = "%H:%M:%S"
+    lista = hora2.split(":")
+    hora=int(lista[0])
+    minuto=int(lista[1])
+    segundo=int(lista[2])
+    h1 = datetime.strptime(hora1, formato)
+    dh = timedelta(hours=hora) 
+    dm = timedelta(minutes=minuto)          
+    ds = timedelta(seconds=segundo) 
+    resultado1 =h1 + ds
+    resultado2 = resultado1 + dm
+    resultado = resultado2 + dh
+    resultado=resultado.strftime(formato)
+    return str(resultado)
+ 
+
 if __name__ == '__main__':
     app.run(debug=True)

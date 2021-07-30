@@ -1,33 +1,49 @@
+{% extends 'layout.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 	<link rel="stylesheet" id="bootstrap-css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 	<link rel="stylesheet" id="bootstrap-css" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-
-	<title>Login</title>
-
 </head>
-
 <body>
-	<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="contenido">
-                <h1>Ingreso</h1>
+    
+    {% for accounts in account %}
+    
+    
+                <div class="container">
+                    {%  with messages= get_flashed_messages() %}
+
+{% if messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+    
+  
+    {% for message in messages %}
+          {{ message }}
+
+    {% endfor%}
+    
+
+   </div>
+{%endif%}
+
+{% endwith %}
                     <p class="text-muted"> Por favor registre su Horario</p>
-                    <a href="{{ url_for('registroEntrada') }}" class="btn" role="button">Registro Entrada</a>
-                    <a href="{{ url_for('registroSalida') }}" class="btn" role="button">Registro Salida</a>
-                    
+                    <a href="{{ url_for('entrada') }}" class="btn btn-primary">
+                        Registro Entrada
+                    </a>     
+                    <a   href="{{url_for('salida')}}"  class="btn btn-success">
+
+                        Registro Salida
+                    </a>       
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+    {% endfor %}
+ 	
 </body>
 
 <!--Funcionalidades Scripts-->
@@ -35,3 +51,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </html>
+
+{% endblock %}
